@@ -27,6 +27,7 @@ function love.load()
   curr_frames = frames
   curr_col = max_collunms
 
+  
   for i=0,max_collunms-1 do 
     table.insert(frames, love.graphics.newQuad(i * frame_width, 0, frame_width, frame_height, image_width, image_height))
   end
@@ -45,6 +46,9 @@ end
 function love.update(dt)
 
   if love.keyboard.isDown("right") then
+    if face == -5 then
+      player_x = player_x - 32 * 5 
+    end
     player_x = player_x + 200 * dt
     face = 5
     curr_img = walk_image
@@ -53,6 +57,9 @@ function love.update(dt)
     
   elseif love.keyboard.isDown("left") then
 
+    if face == 5 then
+      player_x = player_x + 32 * 5 
+    end
     player_x = player_x - 200 * dt
     face = -5
     curr_img = walk_image
