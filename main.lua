@@ -14,6 +14,9 @@ function love.load()
 
   walk_frames = {}
   frames = {}
+  
+  jump_frame = {}
+  fall_frame = {}
 
   image_width = image:getWidth()
   image_height = image:getHeight()
@@ -31,6 +34,13 @@ function love.load()
   player_x = 100
   player_y = ground 
 
+  y_velocity = 0
+
+  player_jump_height = -300
+  player_gravity = -500
+
+  jump_fall_col = 1
+
   face = 1
 
   curr_img = image
@@ -45,6 +55,9 @@ function love.load()
   for i=0,walk_collunmns-1 do
     table.insert(walk_frames, love.graphics.newQuad(i * frame_width, 0, frame_width, frame_height, walk_width, walk_height))
   end
+
+  table.insert(jump_frame, love.graphics.newQuad(0, 0, frame_width, frame_height, frame_width, frame_height))
+  table.insert(fall_frame, love.graphics.newQuad(0, 0, frame_width, frame_height, frame_width, frame_height))
   currentFrame = 1
 
 end
@@ -65,27 +78,82 @@ function love.update(dt)
     if face == -1 then
       player_x = player_x - 32 * 1 
     end
-    player_x = player_x + 200 * dt
+    if player_x < (love.graphics.getWidth() - 32) then
+      
+      player_x = player_x + 200 * dt
+    end
     face = 1
-    curr_img = walk_image
-    curr_frames = walk_frames
-    curr_col = walk_collunmns
+    if y_velocity == 0 then
+      
+      curr_img = walk_image
+      curr_frames = walk_frames
+      curr_col = walk_collunmns
+    elseif y_velocity < 0 then
+      curr_img = jump_image
+      curr_frames = jump_frame
+      curr_col = jump_fall_col
+    else
+      curr_img = fall_image
+      curr_frames = fall_frame
+      curr_col = jump_fall_col
+    end
     
   elseif love.keyboard.isDown("left") then
 
     if face == 1 then
       player_x = player_x + 32 * 1 
     end
-    player_x = player_x - 200 * dt
+
+    if player_x > 32 then
+      
+      player_x = player_x - 200 * dt
+    end
     face = -1
-    curr_img = walk_image
-    curr_frames = walk_frames
-    curr_col = walk_collunmns
+    if y_velocity == 0 then
+      curr_img = walk_image
+      curr_frames = walk_frames
+      curr_col = walk_collunmns
+    elseif y_velocity < 0 then
+      curr_img = jump_image
+      curr_frames = jump_frame
+      curr_col = jump_fall_col
+    else
+      curr_img = fall_image
+      curr_frames = fall_frame
+      curr_col = jump_fall_col
+    end
   else
-    curr_img = image
-    curr_frames = frames
-    curr_col = max_collunms
+    if y_velocity == 0 then
+      curr_img = image
+      curr_frames = frames
+      curr_col = max_collunms
+    elseif y_velocity < 0 then
+      curr_img = jump_image
+      curr_frames = jump_frame
+      curr_col = jump_fall_col
+    else
+      curr_img = fall_image
+      curr_frames = fall_frame
+      curr_col = jump_fall_col
+    end
   end
+
+  if love.keyboard.isDown("space") then
+    if y_velocity == 0 then
+      y_velocity = player_jump_height
+    end
+  end
+
+  if y_velocity ~= 0 then
+    player_y = player_y + y_velocity * dt
+    y_velocity = y_velocity - player_gravity * dt
+  end
+
+  if player_y > ground then
+    y_velocity = 0
+    player_y = ground
+  end
+
   currentFrame = currentFrame + 10 * dt
   if currentFrame > curr_col then
     currentFrame = 1
