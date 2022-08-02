@@ -1,12 +1,20 @@
 
+
+
 function love.load()
   Object = require "classic"
   require "entity"
-
+  
   image = love.graphics.newImage("Free/Main Characters/Mask Dude/Idle (32x32).png")
   walk_image = love.graphics.newImage("Free/Main Characters/Mask Dude/Run (32x32).png")
+  jump_image = love.graphics.newImage("Free/Main Characters/Mask Dude/Jump (32x32).png") 
+  fall_image = love.graphics.newImage("Free/Main Characters/Mask Dude/Fall (32x32).png") 
+
+  background_image = love.graphics.newImage("Free/Background/Pink.png") 
+
   walk_frames = {}
   frames = {}
+
   image_width = image:getWidth()
   image_height = image:getHeight()
   local frame_width = 32 
@@ -18,10 +26,12 @@ function love.load()
 
   walk_collunmns = math.floor(walk_width / frame_width)
 
-  player_x = 100
-  player_y = 100
 
-  face = 5
+  ground = 400
+  player_x = 100
+  player_y = ground 
+
+  face = 1
 
   curr_img = image
   curr_frames = frames
@@ -39,29 +49,35 @@ function love.load()
 
 end
 
+
 function love.draw()
-  love.graphics.draw(curr_img, curr_frames[math.floor(currentFrame)], player_x, player_y, 0, face, 5)
+  for i=0,love.graphics.getWidth(),64 do
+    for j=0,love.graphics.getHeight(),64 do 
+      love.graphics.draw(background_image, i, j)
+    end
+  end
+  love.graphics.draw(curr_img, curr_frames[math.floor(currentFrame)], player_x, player_y, 0, face, 1)
 end
 
 function love.update(dt)
 
   if love.keyboard.isDown("right") then
-    if face == -5 then
-      player_x = player_x - 32 * 5 
+    if face == -1 then
+      player_x = player_x - 32 * 1 
     end
     player_x = player_x + 200 * dt
-    face = 5
+    face = 1
     curr_img = walk_image
     curr_frames = walk_frames
     curr_col = walk_collunmns
     
   elseif love.keyboard.isDown("left") then
 
-    if face == 5 then
-      player_x = player_x + 32 * 5 
+    if face == 1 then
+      player_x = player_x + 32 * 1 
     end
     player_x = player_x - 200 * dt
-    face = -5
+    face = -1
     curr_img = walk_image
     curr_frames = walk_frames
     curr_col = walk_collunmns
